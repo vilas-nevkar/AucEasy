@@ -8,6 +8,6 @@ def logged_in_check(func):
     def inner(request):
         check = is_logged_in(request)
         if not check:
-            return HttpResponseRedirect(reverse('login'))
+            return HttpResponseRedirect(reverse('admin_login'))
         return func(request)
     return inner

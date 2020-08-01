@@ -3,7 +3,13 @@
 {% block title %}Register{% endblock title %}
 
 {% block content %}
-<div>
-    <h2>Registered successfully</h2>
+<h2>Registered successfully</h2>
+<div class="card-body">
+    <form action="{% url 'admin_login' %}" method="">
+        <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
+            <a class="btn btn-primary" href="adminlogin/">Re-login</a>
+        <button class="btn btn-primary" type="submit">Re-Login</button>
+    </div>
 </div>
+
 {% endblock content %}

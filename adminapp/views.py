@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from util.decorators import logged_in_check
 from .forms import UserRegisterForm, UserLoginForm
@@ -7,12 +7,15 @@ from .models import AdminUser
 
 @logged_in_check
 def dashborad(request):
-    return render(request, 'dashboard.html', {'section': 'Dashborad'})
+    user_data = request.session.get('user_data', None)
+    print(user_data)
+    return render(request, 'dashboard.html', {'section': 'Dashborad', 'user_data': user_data})
 
 
 def user_register(request):
     if request.method == 'POST':
         user_form = UserRegisterForm(data=request.POST)
+        # user_form.save()
         print(request.POST)
         if user_form.is_valid():
             print(user_form.cleaned_data)
@@ -20,7 +23,7 @@ def user_register(request):
             return render(request, 'registration/registration_done.html', {})
         else:
             user_form = UserRegisterForm()
-            return render(request, 'registration/register.html', {'user_form': user_form})
+            return redirect(request, 'registration/register.html', {'user_form': user_form})
 
     else:
         user_form = UserRegisterForm()
@@ -34,6 +37,7 @@ def user_login(request):
     :return:
     """
     if request.method == 'POST':
+        # import pdb; pdb.set_trace()
         form = UserLoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
@@ -48,8 +52,8 @@ def user_login(request):
                 user_data = {'username': cd['username'], 'email': cd['email']}
                 session = request.session
                 session['user_data'] = user_data
-                return HttpResponseRedirect(reverse('dashboard'))
-
+                # return HttpResponseRedirect(reverse('dashboard'))
+                return render(request, 'dashboard.html', {'section': 'Dashborad', 'username': user_data['username']})
             else:
                 return HttpResponse('Invalid Login')
         else:

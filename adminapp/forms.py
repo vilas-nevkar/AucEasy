@@ -1,5 +1,6 @@
 from django import forms
 from .models import AdminUser
+from productapp.models import ProductCategory, ProductSubcategory
 
 
 class UserRegisterForm(forms.ModelForm):
@@ -25,7 +26,6 @@ class UserRegisterForm(forms.ModelForm):
             'admin_password': forms.PasswordInput(),
             'admin_confirm_password': forms.PasswordInput()
         }
-
 
     def clean_admin_password(self):
         password = self.cleaned_data.get('admin_password')
@@ -54,3 +54,10 @@ class UserLoginForm(forms.Form):
             'placeholder': 'Enter password'
         })
     )
+
+
+class ProductFilterForm(forms.Form):
+
+    date = forms.DateField(widget=forms.SelectDateWidget())
+    category = forms.ModelChoiceField(queryset=ProductCategory.objects.values_list('productcategory_name', flat=True))
+    subcategory = forms.ModelChoiceField(queryset=ProductSubcategory.objects.values_list('productsubcategory_name', flat=True))

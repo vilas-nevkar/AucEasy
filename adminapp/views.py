@@ -1,8 +1,11 @@
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from util.decorators import logged_in_check
-from .forms import UserRegisterForm, UserLoginForm
+from django.core.paginator import Paginator
+
+from .forms import UserRegisterForm, UserLoginForm, ProductFilterForm
 from .models import AdminUser
+from productapp.models import ProductInformation
 
 
 @logged_in_check
@@ -69,3 +72,38 @@ def user_logout(request):
     session = request.session
     session.flush()
     return HttpResponse("logout")
+
+
+def view_products(request):
+    products = ProductInformation.objects.filter(product_verify=False)
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    form = ProductFilterForm(data=request.GET)
+    if form.is_valid():
+        print(form.cleaned_data)
+
+    else:
+        print(form.errors)
+    return render(request, 'view-products.html', {'count': products.count(), 'page_obj': page_obj, 'filters': form})
+
+
+def verify_products(request, product_id=None):
+    # for one product only
+    if product_id:
+        # get the product
+        product = ProductInformation.objects.get(productinformation_id=product_id)
+        # update value
+        product.product_verify = True
+        # save
+        product.save()
+        return HttpResponseRedirect(reverse('view_products'))
+
+
+def view_verified_products(request):
+    products = ProductInformation.objects.filter(product_verify=True)
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'verified-products.html', {'count': products.count(), 'page_obj': page_obj})

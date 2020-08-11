@@ -25,7 +25,9 @@ class ProductInformation(models.Model):
     productsubcategory = models.ForeignKey(ProductSubcategory, on_delete=models.CASCADE)
     productinformation_name = models.CharField(max_length=36)
     productinformation_details = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # remove null constraint
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     product_verify = models.BooleanField(default=False)
     productinformation_baseprice = models.FloatField()
 

@@ -1,0 +1,48 @@
+{% extends 'dash_base.html' %}
+
+{% block title %}Verified Products{% endblock title %}
+
+{% block content %}
+
+<h2>Verified Products</h2>
+<p>Product count: {{ count }}</p>
+
+<table border="1" style="width:100%">
+    <tr>
+        <th>SR/No.</th>
+        <th>Product Name</th>
+    </tr>
+
+    {% for product in page_obj %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ product.productinformation_name }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+
+{{ product.productinformation_name }}<br>
+
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
+{% endblock content %}

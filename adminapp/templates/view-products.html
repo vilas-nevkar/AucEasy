@@ -1,0 +1,60 @@
+{% extends 'dash_base.html' %}
+
+{% block title %}Products{% endblock title %}
+
+{% block content %}
+<h2>Unverified Products</h2>
+<p>Product count: {{ count }}</p>
+
+<div>
+    <form action="." method="GET">
+        {{ filters.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+<table border="1" style="width:100%">
+    <tr>
+        <th>SR/No.</th>
+        <th>Product Name</th>
+        <th>Action</th>
+    </tr>
+
+    {% for product in page_obj %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ product.productinformation_name }}</td>
+        <td><a href="{% url 'verify_products' product_id=product.productinformation_id %}">Verify</a></td>
+    </tr>
+
+    {% empty %}
+
+    <p>No product to verify</p>
+    {% endfor %}
+
+</table>
+
+
+{{ product.productinformation_name }}<br>
+
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
+{% endblock content %}

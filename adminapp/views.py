@@ -37,7 +37,6 @@ def user_login(request):
     :return:
     """
     if request.method == 'POST':
-        # import pdb; pdb.set_trace()
         form = UserLoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data

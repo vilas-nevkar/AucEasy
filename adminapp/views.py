@@ -75,35 +75,44 @@ def user_logout(request):
 
 
 def view_products(request):
+    # create context
+    context = {}
     products = ProductInformation.objects.filter(product_verify=False)
-    paginator = Paginator(products, 10)
+    paginator = Paginator(products, 2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    form = ProductFilterForm(data=request.GET)
-    if form.is_valid():
-        print(form.cleaned_data)
+    # update context
+    context['page_obj'] = page_obj
+    context['count'] = products.count()
 
+    # form submission
+    if 'action' in request.GET:
+        form = ProductFilterForm(data=request.GET)
+        if form.is_valid():
+            print(form.cleaned_data)
+        else:
+            print(form.errors)
+            context['form'] = form
     else:
-        print(form.errors)
-    return render(request, 'view-products.html', {'count': products.count(), 'page_obj': page_obj, 'filters': form})
+        # form prior submission
+        form = ProductFilterForm()
+        context['form'] = form
+
+    return render(request, 'view-products.html', context=context)
 
 
 def verify_products(request, product_id=None):
-    # for one product only
     if product_id:
-        # get the product
         product = ProductInformation.objects.get(productinformation_id=product_id)
-        # update value
         product.product_verify = True
-        # save
         product.save()
         return HttpResponseRedirect(reverse('view_products'))
 
 
 def view_verified_products(request):
     products = ProductInformation.objects.filter(product_verify=True)
-    paginator = Paginator(products, 10)
+    paginator = Paginator(products, 3)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'verified-products.html', {'count': products.count(), 'page_obj': page_obj})

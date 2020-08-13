@@ -6,21 +6,14 @@ from productapp.models import ProductCategory, ProductSubcategory
 class UserRegisterForm(forms.ModelForm):
     class Meta:
         model = AdminUser
-        fields = '__all__'
-        # exclude = (
-        #     'admin_contact',
-        #     'country',
-        #     'state',
-        #     'city',
-        #     'area',
-        # )
-        # fields = (
-        #     'admin_name',
-        #     'admin_username',
-        #     'admin_email',
-        #     'admin_password',
-        #     'admin_confirm_password',
-        # )
+
+        fields = (
+            'admin_name',
+            'admin_username',
+            'admin_email',
+            'admin_password',
+            'admin_confirm_password',
+        )
 
         widgets = {
             'admin_password': forms.PasswordInput(),
@@ -58,6 +51,10 @@ class UserLoginForm(forms.Form):
 
 class ProductFilterForm(forms.Form):
 
+    cat_query = ProductCategory.objects.all()
+    subcat_query = ProductSubcategory.objects.all()
+
     date = forms.DateField(widget=forms.SelectDateWidget())
-    category = forms.ModelChoiceField(queryset=ProductCategory.objects.values_list('productcategory_name', flat=True))
-    subcategory = forms.ModelChoiceField(queryset=ProductSubcategory.objects.values_list('productsubcategory_name', flat=True))
+    category = forms.ModelChoiceField(queryset=cat_query)
+    subcategory = forms.ModelChoiceField(queryset=subcat_query)
+

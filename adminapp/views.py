@@ -4,8 +4,8 @@ from util.decorators import logged_in_check
 from django.core.paginator import Paginator
 
 from .forms import UserRegisterForm, UserLoginForm, ProductFilterForm
-from .models import AdminUser
-from productapp.models import ProductInformation
+from .models import AdminUser, Country
+from productapp.models import ProductInformation, ProductSubcategory
 
 
 @logged_in_check
@@ -22,7 +22,19 @@ def user_register(request):
         print(request.POST)
         if user_form.is_valid():
             print(user_form.cleaned_data)
-            user_form.save()
+            country = user_form.cleaned_data.get('country')
+            country = Country.objects.get(country_name=country)
+
+            # get city
+            # get state
+
+            user = user_form.save(commit=False)
+            user.country = country
+            user.city = None
+            user.state = None
+
+            # save user
+            user.save()
             return render(request, 'registration/registration_done.html', {})
         else:
             user_form = UserRegisterForm()
@@ -78,7 +90,7 @@ def view_products(request):
     # create context
     context = {}
     products = ProductInformation.objects.filter(product_verify=False)
-    paginator = Paginator(products, 2)
+    paginator = Paginator(object_list=products, per_page=10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -91,6 +103,18 @@ def view_products(request):
         form = ProductFilterForm(data=request.GET)
         if form.is_valid():
             print(form.cleaned_data)
+            category = form.cleaned_data.get('category')
+            subcategory = form.cleaned_data.get('subcategory')
+            products = ProductInformation.objects.filter(
+                productcategory=category,
+                productsubcategory=subcategory,
+                product_verify=False
+            )
+
+            paginator = Paginator(object_list=products, per_page=10)
+            page_obj = paginator.get_page(page_number)
+            context['page_obj'] = page_obj
+            context['form'] = form
         else:
             print(form.errors)
             context['form'] = form
